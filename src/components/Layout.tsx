@@ -71,10 +71,11 @@ export function Layout({ children }: LayoutProps) {
   };
 
   return (
-    <div className="min-h-screen flex w-full bg-background">
-      <AppSidebar />
-      
-      <div className="flex-1 flex flex-col">
+    <SidebarProvider>
+      <div className="min-h-screen flex w-full bg-background">
+        <AppSidebar />
+        
+        <div className="flex-1 flex flex-col">
         {/* Header */}
         <header className="h-14 border-b bg-doc-content px-4 flex items-center justify-between shadow-soft">
           <div className="flex items-center gap-4">
@@ -166,11 +167,12 @@ export function Layout({ children }: LayoutProps) {
           </div>
         </header>
 
-        {/* Main Content */}
-        <main className="flex-1 bg-background">
-          {children}
-        </main>
+          {/* Main Content */}
+          <main className="flex-1 bg-background">
+            {children}
+          </main>
+        </div>
       </div>
-    </div>
+    </SidebarProvider>
   );
 }
