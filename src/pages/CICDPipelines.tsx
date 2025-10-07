@@ -2,6 +2,7 @@ import { DocumentationPage } from "./DocumentationPage";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle, GitBranch, Play, AlertCircle, Zap } from "lucide-react";
+import { useSidebar } from "@/contexts/SidebarContext";
 
 const cicdContent = (
   <div className="space-y-8">
@@ -293,6 +294,12 @@ aws cloudformation create-stack \\
 );
 
 export default function CICDPipelines() {
+  const { updateSection } = useSidebar();
+  
+  const handleEdit = (pageId: string, newTitle: string, newContent: string) => {
+    updateSection(pageId, { title: newTitle, content: newContent });
+  };
+
   return (
     <DocumentationPage
       title="CI/CD Pipelines"
@@ -301,6 +308,8 @@ export default function CICDPipelines() {
       breadcrumbs={[{ title: "CI/CD Pipelines" }]}
       author="DevOps Team"
       lastModified="4 hours ago"
+      pageId="ci-cd-pipelines"
+      onEdit={handleEdit}
     />
   );
 }

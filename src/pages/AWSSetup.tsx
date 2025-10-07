@@ -2,6 +2,7 @@ import { DocumentationPage } from "./DocumentationPage";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle, Cloud, Settings, Rocket, Terminal, Code } from "lucide-react";
+import { useSidebar } from "@/contexts/SidebarContext";
 
 const awsSetupContent = (
   <div className="space-y-8">
@@ -247,6 +248,12 @@ const awsSetupContent = (
 );
 
 export default function AWSSetup() {
+  const { updateSection } = useSidebar();
+  
+  const handleEdit = (pageId: string, newTitle: string, newContent: string) => {
+    updateSection(pageId, { title: newTitle, content: newContent });
+  };
+
   return (
     <DocumentationPage
       title="AWS Setup Guide"
@@ -255,6 +262,8 @@ export default function AWSSetup() {
       breadcrumbs={[{ title: "AWS Setup" }]}
       author="Cloud Infrastructure Team"
       lastModified="2 hours ago"
+      pageId="aws-setup"
+      onEdit={handleEdit}
     />
   );
 }
