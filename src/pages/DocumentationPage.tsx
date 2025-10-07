@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { EditPageDialog } from "@/components/EditPageDialog";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { 
   Edit3, 
   Share2, 
@@ -11,7 +12,9 @@ import {
   Clock, 
   User,
   ChevronRight,
-  Home
+  Home,
+  Save,
+  X
 } from "lucide-react";
 
 interface DocumentationPageProps {
@@ -35,12 +38,21 @@ export function DocumentationPage({
   pageId,
   onEdit
 }: DocumentationPageProps) {
-  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedTitle, setEditedTitle] = useState(title);
+  const [editedContent, setEditedContent] = useState(typeof content === 'string' ? content : '');
 
-  const handleSaveEdit = (newTitle: string, newContent: string) => {
+  const handleSave = () => {
     if (pageId && onEdit) {
-      onEdit(pageId, newTitle, newContent);
+      onEdit(pageId, editedTitle, editedContent);
+      setIsEditing(false);
     }
+  };
+
+  const handleCancel = () => {
+    setEditedTitle(title);
+    setEditedContent(typeof content === 'string' ? content : '');
+    setIsEditing(false);
   };
 
   return (
@@ -65,7 +77,18 @@ export function DocumentationPage({
         <div className="flex items-start justify-between mb-4">
           <div className="flex-1">
             <Badge variant="secondary" className="mb-3">{section}</Badge>
-            <h1 className="text-4xl font-bold text-foreground mb-2">{title}</h1>
+            
+            {isEditing ? (
+              <Input
+                value={editedTitle}
+                onChange={(e) => setEditedTitle(e.target.value)}
+                className="text-4xl font-bold mb-2 h-auto py-2"
+                placeholder="Page title"
+              />
+            ) : (
+              <h1 className="text-4xl font-bold text-foreground mb-2">{title}</h1>
+            )}
+            
             <div className="flex items-center gap-4 text-sm text-muted-foreground">
               <div className="flex items-center gap-1">
                 <User className="h-4 w-4" />
@@ -79,44 +102,68 @@ export function DocumentationPage({
           </div>
           
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" className="gap-2">
-              <Heart className="h-4 w-4" />
-              Like
-            </Button>
-            <Button variant="outline" size="sm" className="gap-2">
-              <Share2 className="h-4 w-4" />
-              Share
-            </Button>
-            <Button 
-              size="sm" 
-              className="gap-2"
-              onClick={() => setEditDialogOpen(true)}
-              disabled={!pageId || !onEdit}
-            >
-              <Edit3 className="h-4 w-4" />
-              Edit
-            </Button>
+            {!isEditing ? (
+              <>
+                <Button variant="outline" size="sm" className="gap-2">
+                  <Heart className="h-4 w-4" />
+                  Like
+                </Button>
+                <Button variant="outline" size="sm" className="gap-2">
+                  <Share2 className="h-4 w-4" />
+                  Share
+                </Button>
+                <Button 
+                  size="sm" 
+                  className="gap-2"
+                  onClick={() => setIsEditing(true)}
+                  disabled={!pageId || !onEdit}
+                >
+                  <Edit3 className="h-4 w-4" />
+                  Edit
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button 
+                  variant="outline"
+                  size="sm" 
+                  className="gap-2"
+                  onClick={handleCancel}
+                >
+                  <X className="h-4 w-4" />
+                  Cancel
+                </Button>
+                <Button 
+                  size="sm" 
+                  className="gap-2"
+                  onClick={handleSave}
+                >
+                  <Save className="h-4 w-4" />
+                  Save
+                </Button>
+              </>
+            )}
           </div>
         </div>
         
         <Separator />
       </div>
 
-      {/* Edit Dialog */}
-      {pageId && onEdit && (
-        <EditPageDialog
-          open={editDialogOpen}
-          onOpenChange={setEditDialogOpen}
-          initialTitle={title}
-          initialContent={typeof content === 'string' ? content : ''}
-          onSave={handleSaveEdit}
-        />
-      )}
-
       {/* Content */}
-      <div className="prose prose-lg max-w-none">
-        {content}
-      </div>
+      {isEditing ? (
+        <div className="space-y-4">
+          <Textarea
+            value={editedContent}
+            onChange={(e) => setEditedContent(e.target.value)}
+            className="min-h-[500px] font-normal text-base"
+            placeholder="Enter page content"
+          />
+        </div>
+      ) : (
+        <div className="prose prose-lg max-w-none">
+          {content}
+        </div>
+      )}
 
       {/* Page Footer */}
       <div className="mt-12 pt-6 border-t">
