@@ -5,6 +5,7 @@ export interface SidebarSection {
   title: string;
   icon: string;
   url?: string;
+  content?: string;
   children?: SidebarSection[];
 }
 

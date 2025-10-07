@@ -10,6 +10,7 @@ import QuickStart from "./pages/QuickStart";
 import AWSSetup from "./pages/AWSSetup";
 import CICDPipelines from "./pages/CICDPipelines";
 import Settings from "./pages/Settings";
+import DynamicPage from "./pages/DynamicPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +29,8 @@ const App = () => (
               <Route path="/cloud/aws-setup" element={<AWSSetup />} />
               <Route path="/devops/ci-cd" element={<CICDPipelines />} />
               <Route path="/settings" element={<Settings />} />
+              {/* Dynamic route for user-created pages */}
+              <Route path="/:section/:pageId" element={<DynamicPage />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

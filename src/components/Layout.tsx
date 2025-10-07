@@ -42,6 +42,7 @@ export function Layout({ children }: LayoutProps) {
         title: newPageData.title,
         icon: 'FileText',
         url: `/${newPageData.section}/${pageId}`,
+        content: newPageData.content,
       };
       
       // Add to sidebar
