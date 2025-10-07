@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { EditPageDialog } from "@/components/EditPageDialog";
 import { 
   Edit3, 
   Share2, 
@@ -19,6 +21,8 @@ interface DocumentationPageProps {
   lastModified?: string;
   author?: string;
   breadcrumbs?: { title: string; href?: string }[];
+  pageId?: string;
+  onEdit?: (pageId: string, title: string, content: string) => void;
 }
 
 export function DocumentationPage({ 
@@ -27,8 +31,18 @@ export function DocumentationPage({
   section, 
   lastModified = "2 days ago",
   author = "Alex Johnson",
-  breadcrumbs = []
+  breadcrumbs = [],
+  pageId,
+  onEdit
 }: DocumentationPageProps) {
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+
+  const handleSaveEdit = (newTitle: string, newContent: string) => {
+    if (pageId && onEdit) {
+      onEdit(pageId, newTitle, newContent);
+    }
+  };
+
   return (
     <div className="max-w-4xl mx-auto px-6 py-8">
       {/* Breadcrumbs */}
@@ -73,7 +87,12 @@ export function DocumentationPage({
               <Share2 className="h-4 w-4" />
               Share
             </Button>
-            <Button size="sm" className="gap-2">
+            <Button 
+              size="sm" 
+              className="gap-2"
+              onClick={() => setEditDialogOpen(true)}
+              disabled={!pageId || !onEdit}
+            >
               <Edit3 className="h-4 w-4" />
               Edit
             </Button>
@@ -82,6 +101,17 @@ export function DocumentationPage({
         
         <Separator />
       </div>
+
+      {/* Edit Dialog */}
+      {pageId && onEdit && (
+        <EditPageDialog
+          open={editDialogOpen}
+          onOpenChange={setEditDialogOpen}
+          initialTitle={title}
+          initialContent={typeof content === 'string' ? content : ''}
+          onSave={handleSaveEdit}
+        />
+      )}
 
       {/* Content */}
       <div className="prose prose-lg max-w-none">

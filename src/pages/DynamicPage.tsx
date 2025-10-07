@@ -4,7 +4,7 @@ import { DocumentationPage } from "./DocumentationPage";
 
 export default function DynamicPage() {
   const { section, pageId } = useParams<{ section: string; pageId: string }>();
-  const { sections } = useSidebar();
+  const { sections, updateSection } = useSidebar();
 
   // Find the page in the sidebar context
   const findPage = (items: any[]): any => {
@@ -26,6 +26,10 @@ export default function DynamicPage() {
     return <Navigate to="/404" replace />;
   }
 
+  const handleEdit = (id: string, newTitle: string, newContent: string) => {
+    updateSection(id, { title: newTitle, content: newContent });
+  };
+
   return (
     <DocumentationPage
       title={page.title}
@@ -36,6 +40,8 @@ export default function DynamicPage() {
         { title: section || "Section", href: `/${section}` },
         { title: page.title },
       ]}
+      pageId={page.id}
+      onEdit={handleEdit}
     />
   );
 }
