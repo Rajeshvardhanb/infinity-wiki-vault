@@ -1,4 +1,6 @@
-import { useState, createContext, useContext, ReactNode } from 'react';
+import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
+import { collection, doc, setDoc, getDoc, onSnapshot } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 
 export interface SidebarSection {
   id: string;
@@ -78,7 +80,62 @@ const defaultSections: SidebarSection[] = [
 ];
 
 export function SidebarProvider({ children }: { children: ReactNode }) {
-  const [sections, setSections] = useState<SidebarSection[]>(defaultSections);
+  const [sections, setSections] = useState<SidebarSection[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Load sections from Firestore on mount
+  useEffect(() => {
+    const loadSections = async () => {
+      try {
+        const docRef = doc(db, 'app-data', 'sidebar-sections');
+        const docSnap = await getDoc(docRef);
+        
+        if (docSnap.exists()) {
+          setSections(docSnap.data().sections || defaultSections);
+        } else {
+          // Initialize with default sections
+          await setDoc(docRef, { sections: defaultSections });
+          setSections(defaultSections);
+        }
+      } catch (error) {
+        console.error('Error loading sections from Firebase:', error);
+        setSections(defaultSections);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadSections();
+
+    // Real-time listener for changes
+    const unsubscribe = onSnapshot(
+      doc(db, 'app-data', 'sidebar-sections'),
+      (doc) => {
+        if (doc.exists()) {
+          setSections(doc.data().sections || defaultSections);
+        }
+      },
+      (error) => {
+        console.error('Error listening to Firebase changes:', error);
+      }
+    );
+
+    return () => unsubscribe();
+  }, []);
+
+  // Save sections to Firestore whenever they change
+  useEffect(() => {
+    if (!isLoading && sections.length > 0) {
+      const saveSections = async () => {
+        try {
+          await setDoc(doc(db, 'app-data', 'sidebar-sections'), { sections });
+        } catch (error) {
+          console.error('Error saving sections to Firebase:', error);
+        }
+      };
+      saveSections();
+    }
+  }, [sections, isLoading]);
 
   const addSection = (newSection: SidebarSection, parentId?: string) => {
     setSections(prev => {
