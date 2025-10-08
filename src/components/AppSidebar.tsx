@@ -23,7 +23,8 @@ import {
   Plus,
   Edit,
   Trash2,
-  MoreVertical
+  MoreVertical,
+  FileText
 } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import { useSidebar } from "@/contexts/SidebarContext";
@@ -65,7 +66,7 @@ import {
 const iconMap: Record<string, any> = {
   Home, Cloud, Zap, FileCode, Shield, Bot, Users, Settings,
   GitBranch, Box, Layers, Activity, Lock, FileCheck, 
-  AlertTriangle, Terminal, Code, Rocket
+  AlertTriangle, Terminal, Code, Rocket, FileText
 };
 
 export function AppSidebar() {
