@@ -24,14 +24,19 @@ interface LayoutProps {
 }
 
 export function Layout({ children }: LayoutProps) {
-  const { addSection } = useSidebar();
+  const { addSection, sections } = useSidebar();
   const navigate = useNavigate();
   const location = useLocation();
   const [isCreatingPage, setIsCreatingPage] = useState(false);
+  
+  // Get parent sections (sections with children) for the dropdown
+  const parentSections = sections.filter(section => section.children && section.children.length > 0);
+  const defaultSection = parentSections.length > 0 ? parentSections[0].id : '';
+  
   const [newPageData, setNewPageData] = useState({
     title: '',
     content: '',
-    section: 'devops'
+    section: defaultSection
   });
 
   const handleCreatePage = () => {
@@ -58,7 +63,7 @@ export function Layout({ children }: LayoutProps) {
       });
       
       // Reset form
-      setNewPageData({ title: '', content: '', section: 'devops' });
+      setNewPageData({ title: '', content: '', section: defaultSection });
       setIsCreatingPage(false);
     }
   };
@@ -131,11 +136,15 @@ export function Layout({ children }: LayoutProps) {
                       onChange={(e) => setNewPageData({...newPageData, section: e.target.value})}
                       className="col-span-3 h-10 px-3 py-2 border border-input bg-background rounded-md text-sm"
                     >
-                      <option value="cloud-infrastructure">Cloud Infrastructure</option>
-                      <option value="devops">DevOps & CI/CD</option>
-                      <option value="infrastructure-code">Infrastructure as Code</option>
-                      <option value="security">Security & Compliance</option>
-                      <option value="automation">Automation & Scripting</option>
+                      {parentSections.length === 0 ? (
+                        <option value="">No parent sections available</option>
+                      ) : (
+                        parentSections.map((section) => (
+                          <option key={section.id} value={section.id}>
+                            {section.title}
+                          </option>
+                        ))
+                      )}
                     </select>
                   </div>
                   <div className="grid grid-cols-4 items-start gap-4">
